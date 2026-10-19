@@ -1,0 +1,1879 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Multiplicar en 3 secciones</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        font-family: Arial, sans-serif;
+        overflow: hidden;
+        background: #eeeeee;
+    }
+
+    /* ===== ESTRUCTURA GENERAL ===== */
+
+    .pantalla {
+        width: 100vw;
+        height: 100vh;
+        display: grid;
+        /*grid-template-rows: 80px 1fr 45px;*/
+        grid-template-rows: 1fr 45px;
+    }
+
+    /* ===== FILA SUPERIOR ===== */
+
+    .cabecera {
+        background: #222;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        border-bottom: 4px solid #000;
+    }
+
+    .titulo {
+        font-size: 28px;
+        font-weight: bold;
+        letter-spacing: 1px;
+    }
+
+    #tiempo {
+        position: absolute;
+        right: 25px;
+        top: 12px;
+        min-width: 125px;
+        padding: 10px 18px;
+        background: #111;
+        border: 3px solid white;
+        border-radius: 12px;
+        text-align: center;
+        font-size: 28px;
+        font-weight: bold;
+        color: #00ff66;
+    }
+
+    /* ===== TRES COLUMNAS ===== */
+
+    .contenedor {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        min-height: 0;
+        position: relative;
+    }
+
+    .columna {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 15px;
+        border-right: 4px solid #000;
+        min-width: 0;
+        position: relative;
+    }
+  
+    .columna:last-child {
+        border-right: none;
+    }
+
+    .columna1 {
+        background: grey; /*#e8f4ff*/
+    }
+
+    .columna2 {
+        background: aqua; /*#edffe8;*/
+    }
+
+    .columna3 {
+        background: OliveDrab; /*#fff4df;*/
+    }
+
+    .nombre {
+        font-size: 23px;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    .estadisticas {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 10px;
+    }
+
+/* ===== NOTA FINAL SOBRE LA ZONA DE PREGUNTAS ===== */
+
+.notaFinalZona {
+    width: 90%;
+    max-width: 500px;
+    min-height: 60px;
+    margin: 2px 0 8px 0;
+    padding: 5px 12px;
+
+    background: white;
+    border: 3px solid #000;
+    border-radius: 10px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+
+    text-align: center;
+}
+
+.notaFinalZona .tituloNota {
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.notaFinalZona .numeroNota {
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.notaFinalZona .detalleNota {
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.notaAprobada {
+    color: green;
+}
+
+.notaReprobada {
+    color: red;
+}  
+  
+    .correctas,
+    .erradas {
+        padding: 6px 14px;
+        border: 2px solid #000;
+        border-radius: 10px;
+        font-size: 18px;
+        font-weight: bold;
+        background: white;
+    }
+
+    .correctas {
+        color: green;
+    }
+
+    .erradas {
+        color: red;
+    }
+
+    /* ===== PREGUNTA ===== */
+
+    .pregunta {
+        width: 95%;
+        max-width: 500px;
+        margin-top: 5px;
+        padding: 15px;
+        background: white;
+        border: 3px solid #222;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .textoPregunta {
+        font-size: 22px;
+        font-weight: bold;
+        margin-bottom: 12px;
+    }
+
+.operacion {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+
+    margin: 0 auto;
+
+    font-family: "Courier New", monospace;
+    font-size: 42px;
+    font-weight: bold;
+    line-height: 1.2;
+}
+
+/* ===== PREGUNTA HORIZONTAL ===== */
+
+.multiplicacion {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    gap: 15px;
+
+    width: 100%;
+
+    font-size: 42px;
+    font-weight: bold;
+}
+
+.numeroMultiplicacion {
+    min-width: 45px;
+    text-align: center;
+}
+
+.signoMultiplicacion {
+    font-size: 38px;
+    font-weight: bold;
+}
+
+/* ===== RECUADRO DE RESPUESTA ===== */
+
+.resultado {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+
+    margin-top: 12px;
+    padding-top: 0;
+}
+  
+.signoMas {
+    position: absolute;
+    left: -35px;
+    font-weight: bold;
+}  
+
+.resultado {
+    width: 100%;
+    text-align: right;
+    border-top: none;
+    margin-top: 5px;
+    padding-top: 5px;
+}  
+
+  .boxRespuesta {
+    width: 150px;
+    height: 55px;
+    margin: 8px auto 0 auto;
+    border: 3px solid #000;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "Courier New", monospace;
+    font-size: 42px;
+    font-weight: bold;
+    color: #000;
+}
+  
+  /* ===== ALTERNATIVAS ===== */
+
+  .alternativas {
+    width: 95%;
+    max-width: 500px;
+    margin: 15px auto 0 auto;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+    .alternativa {
+        width: 100%;
+        padding: 13px;
+        border: 3px solid #000;
+        border-radius: 12px;
+        background: #ffffff;
+        font-size: 30px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.15s;
+        box-sizing: border-box;
+    }
+
+  
+  .alternativa {
+    min-height: 65px;
+}
+
+    .alternativa:hover:not(:disabled) {
+        transform: scale(1.03);
+        background: #ffff99;
+    }
+
+    .alternativa:disabled {
+        cursor: default;
+    }
+
+    .correcta {
+        background: #55dd55 !important;
+        color: #000;
+    }
+
+    .incorrecta {
+        background: #ff5555 !important;
+        color: white;
+    }
+
+    /* ===== MENSAJE ===== */
+
+.mensaje {
+    min-height: 45px;
+    margin-top: 10px;
+    font-size: 21px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* ===== NOTA FINAL EN CADA DIVISIÓN ===== */
+
+.notaDivision {
+    width: 90%;
+    margin-top: 8px;
+    padding: 10px;
+    border: 4px solid #000;
+    border-radius: 12px;
+    background: white;
+    text-align: center;
+    font-weight: bold;
+}
+
+.notaTitulo {
+    font-size: 18px;
+}
+
+.notaNumero {
+    font-size: 42px;
+    margin: 3px 0;
+}
+
+.notaDetalle {
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+.notaAprobada {
+    color: green;
+}
+
+.notaReprobada {
+    color: red;
+}
+  
+    /* ===== PIE ===== */
+
+    .pie {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #222;
+        color: aqua;
+        border-top: 4px solid #000;
+        font-size: 12px;
+        font-weight: normal;
+    }
+
+    /* ===== PANTALLA FINAL ===== */
+
+    #finJuego {
+        position: fixed;
+        inset: 0;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        background: rgba(0,0,0,0.75);
+        z-index: 1000;
+    }
+
+    .panelFinal {
+        background: white;
+        width: 600px;
+        max-width: 90%;
+        padding: 30px;
+        border: 5px solid #000;
+        border-radius: 20px;
+        text-align: center;
+    }
+
+    .panelFinal h1 {
+        margin-top: 0;
+        font-size: 38px;
+    }
+
+    .resumen {
+        font-size: 23px;
+        line-height: 1.7;
+        font-weight: bold;
+    }
+
+    #reiniciar {
+        margin-top: 20px;
+        padding: 12px 30px;
+        font-size: 22px;
+        font-weight: bold;
+        border: 3px solid #000;
+        border-radius: 12px;
+        cursor: pointer;
+        background: #ffff00;
+    }
+
+    /* ===== RESPONSIVE ===== */
+
+    @media (max-width: 900px) {
+
+        .titulo {
+            font-size: 20px;
+        }
+
+        #tiempo {
+            font-size: 20px;
+            min-width: 90px;
+            right: 10px;
+        }
+
+        .nombre {
+            font-size: 18px;
+        }
+
+        .operacion {
+            font-size: 20px;
+        }
+
+        .alternativa {
+            font-size: 18px;
+            padding: 9px;
+        }
+
+        .correctas,
+        .erradas {
+            font-size: 14px;
+            padding: 5px 8px;
+        }
+
+        .pie {
+            font-size: 14px;
+        }
+    }
+
+  
+/* ===== NOTA FINAL POR ESTUDIANTE ===== */
+
+.notaFinal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    
+    width: 420px;
+    max-width: 90vw;
+    
+    padding: 30px;
+    
+    background: white;
+    border: 5px solid #000;
+    border-radius: 20px;
+    
+    text-align: center;
+    
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    
+    z-index: 2000;
+}
+
+.notaFinal h2 {
+    margin: 0 0 15px 0;
+    font-size: 30px;
+}
+
+.notaNumero {
+    font-size: 70px;
+    font-weight: bold;
+    margin: 15px 0;
+}
+
+.detalleNota {
+    font-size: 22px;
+    line-height: 1.7;
+    font-weight: bold;
+}
+
+.notaAprobada {
+    color: green;
+}
+
+.notaReprobada {
+    color: red;
+}  
+
+/* ===== ENCABEZADO DE CADA ESTUDIANTE ===== */
+
+.encabezadoEstudiante {
+    width: 95%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.encabezadoEstudiante .nombre {
+    margin-bottom: 0;
+}
+
+.tiempoEstudiante {
+    min-width: 85px;
+    padding: 5px 10px;
+
+    background: #111;
+    color: #00ff66;
+
+    border: 3px solid #000;
+    border-radius: 8px;
+
+    text-align: center;
+
+    font-size: 22px;
+    font-weight: bold;
+    font-family: "Courier New", monospace;
+}
+
+/* =====================================================
+   MENSAJE INICIAL - ZOOM EXPLOSIVO
+===================================================== */
+
+#mensajeInicio {
+    position: fixed;
+    inset: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: rgba(0, 0, 0, 0.82);
+
+    z-index: 5000;
+
+    pointer-events: none;
+}
+
+.contenidoInicio {
+    padding: 30px 50px;
+
+    background: #ffff00;
+
+    border: 6px solid #000;
+    border-radius: 25px;
+
+    color: #000;
+
+    font-size: 48px;
+    font-weight: bold;
+
+    text-align: center;
+
+    box-shadow:
+        0 0 0 8px #ff6600,
+        0 0 30px #ffff00,
+        0 0 60px #ff0000;
+
+    animation:
+        zoomExplosivo 1.5s ease-in-out forwards;
+}
+
+@keyframes zoomExplosivo {
+
+    0% {
+        transform: scale(0.05) rotate(-15deg);
+        opacity: 0;
+    }
+
+    15% {
+        transform: scale(1.35) rotate(8deg);
+        opacity: 1;
+    }
+
+    30% {
+        transform: scale(0.90) rotate(-5deg);
+    }
+
+    45% {
+        transform: scale(1.15) rotate(3deg);
+    }
+
+    60% {
+        transform: scale(1) rotate(0deg);
+    }
+
+    82% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(2.2);
+        opacity: 0;
+    }
+}  
+
+/* =====================================================
+   MENSAJE FIN - ZOOM EXPLOSIVO
+===================================================== */
+  
+#mensajeFin {
+    position: fixed;
+    inset: 0;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.82);
+    z-index: 5000;
+    pointer-events: auto;
+}
+
+.contenidoFin {
+    padding: 30px 50px;
+    background: #ffff00;
+    border: 6px solid #000;
+    border-radius: 25px;
+    color: #000;
+    font-size: 48px;
+    font-weight: bold;
+    text-align: center;
+    box-shadow:
+        0 0 0 8px #ff6600,
+        0 0 30px #ffff00,
+        0 0 60px #ff0000;
+
+    animation:
+        zoomExplosivoFin 1.5s ease-in-out forwards;
+}
+
+@keyframes zoomExplosivoFin {
+    0% {
+        transform: scale(0.05) rotate(-15deg);
+        opacity: 0;
+    }
+
+    15% {
+        transform: scale(1.35) rotate(8deg);
+        opacity: 1;
+    }
+
+    30% {
+        transform: scale(0.90) rotate(-5deg);
+    }
+
+    45% {
+        transform: scale(1.15) rotate(3deg);
+    }
+
+    60% {
+        transform: scale(1) rotate(0deg);
+    }
+
+    82% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}  
+
+/* =====================================================
+   MENSAJE ERROR: ❌
+===================================================== */  
+
+#mensajeError {
+    position: fixed;
+    inset: 0;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 0, 0, 0.15);
+    z-index: 6000;
+    pointer-events: none;
+}
+
+.equisError {
+    font-size: 180px;
+    font-weight: bold;
+    color: red;
+    text-shadow:
+        5px 5px 0 #000,
+        0 0 25px #ff0000;
+
+    animation: aparecerEquis 0.3s ease-out forwards;
+}
+
+@keyframes aparecerEquis {
+    0% {
+        transform: scale(0.1) rotate(-20deg);
+        opacity: 0;
+    }
+
+    40% {
+        transform: scale(1.3) rotate(10deg);
+        opacity: 1;
+    }
+
+    70% {
+        transform: scale(0.95) rotate(-5deg);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 0;
+    }
+}  
+
+.mensajeErrorDivision {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.1);
+
+    display: none;
+
+    font-size: 150px;
+    font-weight: bold;
+    color: red;
+
+    text-shadow:
+        5px 5px 0 #000,
+        0 0 25px red;
+
+    z-index: 1000;
+    pointer-events: none;
+}
+
+  
+@keyframes equisDivision {
+
+    0% {
+        transform:
+            translate(-50%, -50%)
+            scale(0.1)
+            rotate(-20deg);
+
+        opacity: 0;
+    }
+
+    40% {
+        transform:
+            translate(-50%, -50%)
+            scale(1.3)
+            rotate(10deg);
+
+        opacity: 1;
+    }
+
+    70% {
+        transform:
+            translate(-50%, -50%)
+            scale(0.95)
+            rotate(-5deg);
+
+        opacity: 1;
+    }
+
+    100% {
+        transform:
+            translate(-50%, -50%)
+            scale(1)
+            rotate(0deg);
+
+        opacity: 0;
+    }
+}
+
+  
+/* =====================================================
+   MENSAJE CORRECTO: ✔️
+===================================================== */  
+  
+.mensajeCorrectoDivision {
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
+    width: 180px;
+    height: 180px;
+
+    display: none;
+
+    justify-content: center;
+    align-items: center;
+
+    transform: translate(-50%, -50%);
+
+    font-size: 150px;
+    font-weight: bold;
+    line-height: 1;
+
+    color: blue;
+
+    text-shadow:
+        5px 5px 0 #000,
+        0 0 25px #0088ff;
+
+    z-index: 9999;
+
+    pointer-events: none;
+}
+
+  
+@keyframes checkDivision {
+
+    0% {
+        transform:
+            translate(-50%, -50%)
+            scale(0.1)
+            rotate(-20deg);
+
+        opacity: 0;
+    }
+
+    40% {
+        transform:
+            translate(-50%, -50%)
+            scale(1.3)
+            rotate(10deg);
+
+        opacity: 1;
+    }
+
+    70% {
+        transform:
+            translate(-50%, -50%)
+            scale(0.95)
+            rotate(-5deg);
+
+        opacity: 1;
+    }
+
+    100% {
+        transform:
+            translate(-50%, -50%)
+            scale(1)
+            rotate(0deg);
+
+        opacity: 0;
+    }
+}
+  
+@keyframes checkDivision {
+
+    0% {
+        transform:
+            translate(-50%, -50%)
+            scale(0.1)
+            rotate(-20deg);
+
+        opacity: 0;
+    }
+
+    40% {
+        transform:
+            translate(-50%, -50%)
+            scale(1.3)
+            rotate(10deg);
+
+        opacity: 1;
+    }
+
+    70% {
+        transform:
+            translate(-50%, -50%)
+            scale(0.95)
+            rotate(-5deg);
+
+        opacity: 1;
+    }
+
+    100% {
+        transform:
+            translate(-50%, -50%)
+            scale(1)
+            rotate(0deg);
+
+        opacity: 0;
+    }
+}
+
+  
+</style>
+</head>
+
+<body>
+
+<!-- =====================================================
+     MENSAJE INICIAL
+===================================================== -->
+
+<div id="mensajeInicio">
+    <div class="contenidoInicio">
+        🤖 INICIAR JUEGO!
+    </div>
+</div>
+
+  
+<div id="mensajeFin">
+    <div class="contenidoFin">
+        ⏰ FIN JUEGO!
+    </div>
+</div>
+
+  
+<div class="pantalla">
+
+    <!-- ===== TRES DIVISIONES ===== -->
+
+    <main class="contenedor">
+
+        <!-- COLUMNA 1 -->
+
+        <section class="columna columna1">
+
+            <div class="encabezadoEstudiante">
+            
+                <div class="nombre">
+                    🤩 ESTUDIANTE #1
+                </div>
+            
+                <div class="tiempoEstudiante" id="tiempo1">
+                    01:30
+                </div>
+            
+            </div>
+          
+            <div class="estadisticas">
+
+                <div class="correctas">
+                    ✓ Correctas:
+                    <span id="correctas1">0</span>
+                </div>
+
+                <div class="erradas">
+                    ✗ Erradas:
+                    <span id="erradas1">0</span>
+                </div>
+
+            </div>
+          
+            <div id="notaZona1" class="notaFinalZona">
+                <span class="tituloNota">⭐ NOTA FINAL:</span>
+                <span class="numeroNota">--</span>
+            </div>          
+          
+            <div class="pregunta">
+
+                <div class="textoPregunta">
+                    ¿Cuál es el producto?
+                </div>
+
+                <div id="operacion1" class="operacion"></div>
+
+            </div>
+
+            <div id="alternativas1" class="alternativas"></div>
+
+            <div id="mensaje1" class="mensaje"></div>
+
+            <div id="error1" class="mensajeErrorDivision">❌</div>
+
+            <div id="correcto1" class="mensajeCorrectoDivision">✔️</div>
+          
+        </section>
+
+
+        <!-- COLUMNA 2 -->
+
+        <section class="columna columna2">
+
+            <div class="encabezadoEstudiante">
+            
+                <div class="nombre">
+                   😎 ESTUDIANTE #2
+                </div>
+            
+                <div class="tiempoEstudiante" id="tiempo2">
+                    01:30
+                </div>
+            
+            </div>
+          
+            <div class="estadisticas">
+
+                <div class="correctas">
+                    ✓ Correctas:
+                    <span id="correctas2">0</span>
+                </div>
+
+                <div class="erradas">
+                    ✗ Erradas:
+                    <span id="erradas2">0</span>
+                </div>
+
+            </div>
+
+            <div id="notaZona2" class="notaFinalZona">
+                <span class="tituloNota">⭐ NOTA FINAL:</span>
+                <span class="numeroNota">--</span>
+            </div>
+          
+            <div class="pregunta">
+
+                <div class="textoPregunta">
+                    ¿Cuál es el producto?
+                </div>
+
+                <div id="operacion2" class="operacion"></div>
+
+            </div>
+
+            <div id="alternativas2" class="alternativas"></div>
+
+            <div id="mensaje2" class="mensaje"></div>
+
+            <div id="error2" class="mensajeErrorDivision">❌</div>
+
+            <div id="correcto2" class="mensajeCorrectoDivision">✔️</div>
+          
+        </section>
+
+
+        <!-- COLUMNA 3 -->
+
+        <section class="columna columna3">
+
+            <div class="encabezadoEstudiante">
+            
+                <div class="nombre">
+                   😍 ESTUDIANTE #3
+                </div>
+            
+                <div class="tiempoEstudiante" id="tiempo3">
+                    01:30
+                </div>
+            
+            </div>
+          
+            <div class="estadisticas">
+
+                <div class="correctas">
+                    ✓ Correctas:
+                    <span id="correctas3">0</span>
+                </div>
+
+                <div class="erradas">
+                    ✗ Erradas:
+                    <span id="erradas3">0</span>
+                </div>
+
+            </div>
+
+            <div id="notaZona3" class="notaFinalZona">
+                <span class="tituloNota">⭐ NOTA FINAL:</span>
+                <span class="numeroNota">--</span>
+            </div>
+          
+            <div class="pregunta">
+
+                <div class="textoPregunta">
+                    ¿Cuál es el producto?
+                </div>
+
+                <div id="operacion3" class="operacion"></div>
+
+            </div>
+
+            <div id="alternativas3" class="alternativas"></div>
+
+            <div id="mensaje3" class="mensaje"></div>
+
+            <div id="error3" class="mensajeErrorDivision">❌</div>
+
+            <div id="correcto3" class="mensajeCorrectoDivision">✔️</div>
+          
+        </section>
+
+    </main>
+
+
+    <!-- ===== PIE ===== -->
+
+    <footer class="pie">
+        Derechos Autor | Prof. JOSÉ FRANCISCO VEGA (2026)
+    </footer>
+
+</div>
+
+
+<!-- ===== VENTANA FINAL ===== -->
+
+<div id="finJuego">
+
+    <div class="panelFinal">
+
+        <h1>⏰ ¡TIEMPO TERMINADO!</h1>
+
+        <div class="resumen">
+
+            <div>
+                ESTUDIANTE #1:
+                ✓ <span id="finalCorrectas1">0</span>
+                &nbsp; ✗ <span id="finalErradas1">0</span>
+            </div>
+
+            <div>
+                ESTUDIANTE #2:
+                ✓ <span id="finalCorrectas2">0</span>
+                &nbsp; ✗ <span id="finalErradas2">0</span>
+            </div>
+
+            <div>
+                ESTUDIANTE #3:
+                ✓ <span id="finalCorrectas3">0</span>
+                &nbsp; ✗ <span id="finalErradas3">0</span>
+            </div>
+
+        </div>
+
+        <button id="reiniciar" onclick="reiniciarJuego()">
+            🔄 REINICIAR
+        </button>
+
+    </div>
+
+</div>
+
+<div id="mensajeError">
+    <div class="equisError">✕</div>
+</div>
+
+  
+<script>
+
+    /* =====================================================
+       VARIABLES
+    ===================================================== */
+
+    let tiempoRestante = 90;
+
+    let juegoActivo = true;
+
+    const correctas = [0, 0, 0];
+    const erradas = [0, 0, 0];
+
+    const respuestas = [0, 0, 0];
+
+    const preguntasRespondidas = [0, 0, 0];
+
+    const TOTAL_PREGUNTAS = 40;
+
+  
+    /* =====================================================
+       GENERAR NÚMERO ALEATORIO
+    ===================================================== */
+
+    function numeroAleatorio() {
+    
+        return Math.floor(Math.random() * 9) + 3;  // valores entre 3 y 12
+    }  
+
+    /* =====================================================
+       FORMATO DE NÚMEROS
+    ===================================================== */
+
+    function formatoNumero(numero) {
+
+        return numero.toLocaleString("es-CL");
+
+    }
+
+/* =====================================================
+   COLOR ALEATORIO PARA EL BOX DE RESPUESTA
+===================================================== */
+
+function colorAleatorio() {
+
+    const colores = [
+        "#ff6666",   // rojo
+        "#ffff66",   // amarillo
+        "#66ff66",   // verde
+        "#66ccff",   // celeste
+        "#6699ff",   // azul
+        "#ff99cc",   // rosado
+        "#cc99ff",   // morado
+        "#ff9933"    // naranja
+    ];
+
+    return colores[
+        Math.floor(Math.random() * colores.length)
+    ];
+
+}
+
+/* =====================================================
+   COLORES ALEATORIOS PARA LAS ALTERNATIVAS
+===================================================== */
+
+const coloresAlternativas = [
+    "#ff6666",  // rojo
+    "#66ccff",  // celeste
+    "#66ff66",  // verde
+    "#ffff66",  // amarillo
+    "#cc99ff",  // morado
+    "#ff9933",  // naranja
+    "#ff99cc",  // rosado
+    "#6699ff"   // azul
+];  
+
+function mezclarArray(array) {
+
+    return [...array].sort(
+        () => Math.random() - 0.5
+    );
+
+}  
+
+
+/* =====================================================
+   GENERAR PREGUNTA DE MULTIPLICACIÓN
+   TABLAS DEL 3 AL 12
+===================================================== */
+
+function generarPregunta(indice) {
+
+    if (!juegoActivo) return;
+
+    /* ==========================================
+       GENERAR FACTORES ENTRE 3 Y 12
+    ========================================== */
+
+    const n1 = numeroAleatorio();
+    const n2 = numeroAleatorio();
+
+    const resultado = n1 * n2;
+
+    /* Guardar respuesta correcta */
+
+    respuestas[indice] = resultado;
+
+
+    /* ==========================================
+       MOSTRAR OPERACIÓN
+    ========================================== */
+
+    const colorBox = colorAleatorio();
+
+  
+      const operacion = `
+        <div class="multiplicacion">
+    
+            <span class="numeroMultiplicacion">
+                ${n1}
+            </span>
+    
+            <span class="signoMultiplicacion">
+                ×
+            </span>
+    
+            <span class="numeroMultiplicacion">
+                ${n2}
+            </span>
+    
+        </div>
+    
+        <div class="resultado">
+    
+            <div id="boxRespuesta${indice + 1}"
+                 class="boxRespuesta"
+                 style="background-color: ${colorBox};">
+            </div>
+    
+        </div>
+    `;
+
+    document.getElementById(
+        "operacion" + (indice + 1)
+    ).innerHTML = operacion;
+
+
+    /* ==========================================
+       CREAR 4 ALTERNATIVAS
+    ========================================== */
+
+    let alternativas = [];
+
+    /* Respuesta correcta */
+
+    alternativas.push(resultado);
+
+
+    /* ==========================================
+       DISTRACTORES SIMILARES
+    ========================================== */
+
+    const variaciones = [
+        -2,
+        -1,
+         1,
+         2,
+        -3,
+         3,
+        -4,
+         4
+    ];
+
+
+    while (alternativas.length < 4) {
+
+        const variacion =
+            variaciones[
+                Math.floor(
+                    Math.random() * variaciones.length
+                )
+            ];
+
+        const alternativa =
+            resultado + variacion;
+
+
+        if (
+            alternativa > 0 &&
+            alternativa !== resultado &&
+            !alternativas.includes(alternativa)
+        ) {
+
+            alternativas.push(alternativa);
+
+        }
+
+    }
+
+
+    /* ==========================================
+       MEZCLAR ALTERNATIVAS
+    ========================================== */
+
+    alternativas =
+        mezclarArray(alternativas);
+
+
+    /* ==========================================
+       MOSTRAR BOTONES
+    ========================================== */
+
+    const contenedor =
+        document.getElementById(
+            "alternativas" + (indice + 1)
+        );
+
+    contenedor.innerHTML = "";
+
+
+    const colores =
+        mezclarArray(coloresAlternativas);
+
+
+    alternativas.forEach((numero, posicion) => {
+
+        const boton =
+            document.createElement("button");
+
+        boton.className = "alternativa";
+
+        boton.textContent =
+            formatoNumero(numero);
+
+
+        /* Color diferente para cada alternativa */
+
+        boton.style.backgroundColor =
+            colores[posicion];
+
+
+        boton.onclick = function() {
+
+            comprobarRespuesta(
+                indice,
+                numero,
+                boton
+            );
+
+        };
+
+
+        contenedor.appendChild(boton);
+
+    });
+
+
+    /* ==========================================
+       LIMPIAR MENSAJE
+    ========================================== */
+
+    document.getElementById(
+        "mensaje" + (indice + 1)
+    ).textContent = "";
+
+}
+  
+
+/* =====================================================
+   MOSTRAR NOTA FINAL EN SU DIVISIÓN con "--"
+===================================================== */
+  
+function mostrarNotaFinal(indice) {
+
+    const correctasEstudiante = correctas[indice];
+    const erradasEstudiante = erradas[indice];
+
+    const totalRespondidas =
+        correctasEstudiante + erradasEstudiante;
+
+
+    /* Evitar división por cero */
+
+    let nota = 1.0;
+
+    if (totalRespondidas > 0) {
+
+        nota =
+            1 +
+            (
+                correctasEstudiante /
+                40
+            ) * 6;
+
+      
+    }
+
+
+    nota = nota.toFixed(1);
+
+
+    const claseNota =
+        Number(nota) >= 4.0
+            ? "notaAprobada"
+            : "notaReprobada";
+
+
+    const zona =
+        document.getElementById(
+            "notaZona" + (indice + 1)
+        );
+
+
+    zona.innerHTML = `
+
+        <span class="tituloNota">
+            ⭐ NOTA FINAL:
+        </span>
+
+        <span class="numeroNota ${claseNota}">
+            ${nota.replace(".", ",")}
+        </span>
+    `;
+
+}  
+  
+  
+    /* =====================================================
+       COMPROBAR RESPUESTA
+    ===================================================== */
+
+    function comprobarRespuesta(
+        indice,
+        respuesta,
+        botonPresionado
+    ) {
+
+        if (!juegoActivo) return;
+            if (
+                preguntasRespondidas[indice] >= TOTAL_PREGUNTAS
+            ) {
+                return;
+            }
+
+        const botones =
+            document.querySelectorAll(
+                "#alternativas" + (indice + 1) +
+                " .alternativa"
+            );
+
+
+        /* Bloquear botones */
+
+        botones.forEach(boton => {
+
+            boton.disabled = true;
+
+        });
+
+          if (respuesta === respuestas[indice]) {
+          
+              correctas[indice]++;
+          
+              botonPresionado.classList.add("correcta");
+
+              /*mostrarCheckCorrecta();*/
+              mostrarCheckCorrecto(indice);   
+          
+              /* Mostrar respuesta correcta dentro del box */
+          
+              const box =
+                  document.getElementById(
+                      "boxRespuesta" + (indice + 1)
+                  );
+          
+              box.textContent = formatoNumero(respuesta);
+          
+                    
+          }
+          
+        else {
+
+            erradas[indice]++;
+
+            botonPresionado.classList.add("incorrecta");
+
+            /*mostrarEquisError();*/
+            mostrarEquisError(indice);
+
+
+            /* Mostrar la correcta */
+
+            botones.forEach(boton => {
+
+                if (
+                    Number(
+                        boton.textContent.replace(/\./g, "")
+                    ) === respuestas[indice]
+                ) {
+
+                    boton.classList.add("correcta");
+
+                }
+
+            });
+
+
+        }
+
+        /* Contabilizar pregunta respondida */
+        
+        preguntasRespondidas[indice]++;
+
+      
+        /* Actualizar contadores */
+
+        document.getElementById(
+            "correctas" + (indice + 1)
+        ).textContent = correctas[indice];
+
+
+        document.getElementById(
+            "erradas" + (indice + 1)
+        ).textContent = erradas[indice];
+
+
+        /* Nueva pregunta después de un breve intervalo */
+
+      setTimeout(() => {
+
+        if (
+                juegoActivo &&
+                preguntasRespondidas[indice] < TOTAL_PREGUNTAS
+            ) {
+        
+                generarPregunta(indice);
+        
+            }
+        
+            else if (
+                preguntasRespondidas[indice] === TOTAL_PREGUNTAS
+            ) {
+        
+                mostrarNotaFinal(indice);
+        
+            }
+        
+        }, 400);
+
+    }
+
+
+    /* =====================================================
+       CUENTA REGRESIVA
+    ===================================================== */
+
+    function actualizarTiempo() {
+
+        let minutos =
+            Math.floor(tiempoRestante / 60);
+
+        let segundos =
+            tiempoRestante % 60;
+
+          const tiempoFormateado =
+              String(minutos).padStart(2, "0") +
+              ":" +
+              String(segundos).padStart(2, "0");
+          
+          
+          document.getElementById("tiempo1").textContent =
+              tiempoFormateado;
+          
+          document.getElementById("tiempo2").textContent =
+              tiempoFormateado;
+          
+          document.getElementById("tiempo3").textContent =
+              tiempoFormateado;      
+
+
+        /* Cambiar color cuando queda poco tiempo */
+
+        if (tiempoRestante <= 15) {
+
+          document.getElementById("tiempo1").style.color = "red";
+          document.getElementById("tiempo2").style.color = "red";
+          document.getElementById("tiempo3").style.color = "red";
+
+        }
+
+
+        if (tiempoRestante <= 0) {
+
+            finalizarJuego();
+
+        }
+
+    }
+
+  
+/* =====================================================
+   FINALIZAR JUEGO
+===================================================== */
+
+function finalizarJuego() {
+
+    juegoActivo = false;
+
+    const mensajeFin = document.getElementById("mensajeFin");
+    
+    if (mensajeFin) {
+        mensajeFin.style.display = "flex";
+    }  
+
+    document.getElementById("tiempo1").textContent = "00:00";
+    document.getElementById("tiempo2").textContent = "00:00";
+    document.getElementById("tiempo3").textContent = "00:00";
+
+    /* Bloquear todas las alternativas */
+
+    document
+        .querySelectorAll(".alternativa")
+        .forEach(boton => {
+
+            boton.disabled = true;
+
+        });
+
+
+    /* Mostrar nota final de los 3 estudiantes */
+
+    for (let i = 0; i < 3; i++) {
+
+        mostrarNotaFinal(i);
+
+    }
+
+}
+  
+    /* =====================================================
+       REINICIAR
+    ===================================================== */
+
+    function reiniciarJuego() {
+
+        tiempoRestante = 90;
+
+        juegoActivo = true;
+      
+        correctas[0] = 0;
+        correctas[1] = 0;
+        correctas[2] = 0;
+        
+        erradas[0] = 0;
+        erradas[1] = 0;
+        erradas[2] = 0;
+        
+        preguntasRespondidas[0] = 0;
+        preguntasRespondidas[1] = 0;
+        preguntasRespondidas[2] = 0;      
+
+        for (let i = 1; i <= 3; i++) {
+
+            document.getElementById(
+                "correctas" + i
+            ).textContent = "0";
+
+            document.getElementById(
+                "erradas" + i
+            ).textContent = "0";
+
+        }
+
+        document.getElementById("tiempo1").style.color = "#00ff66";
+        document.getElementById("tiempo2").style.color = "#00ff66";
+        document.getElementById("tiempo3").style.color = "#00ff66";      
+
+        document.getElementById(
+            "finJuego"
+        ).style.display = "none";
+
+        document
+            .querySelectorAll(".notaFinal")
+            .forEach(ventana => ventana.remove());
+      
+
+        /* Generar nuevas preguntas */
+
+        for (let i = 0; i < 3; i++) {
+
+            generarPregunta(i);
+
+        }
+
+    }
+  
+ 
+/* =============================================================
+     RESPUESTA ERRADA POR DIVISION: MOSTRAR EQUIS ERROR ❌
+================================================================ */
+  
+function mostrarEquisError(indice) {
+
+    const equis = document.getElementById(
+        "error" + (indice + 1)
+    );
+
+    if (!equis) return;
+
+    // Mostrar
+    equis.style.display = "block";
+
+    // Reiniciar animación
+    equis.style.animation = "none";
+
+    void equis.offsetWidth;
+
+    // Ejecutar animación
+    equis.style.animation =
+        "equisDivision 0.3s ease-out forwards";
+
+    // Ocultar después de 0.3 segundos
+    setTimeout(() => {
+        equis.style.display = "none";
+    }, 300);
+}
+
+  
+/* =============================================================
+     RESPUESTA CORRECTA POR DIVISION: MOSTRAR CHECK ✔️
+================================================================ */
+   
+function mostrarCheckCorrecto(indice) {
+
+    const check = document.getElementById(
+        "correcto" + (indice + 1)
+    );
+
+    if (!check) return;
+
+    check.style.display = "flex";
+
+    // Reiniciar animación
+    check.style.animation = "none";
+
+    void check.offsetWidth;
+
+    // Ejecutar animación
+    check.style.animation =
+        "checkDivision 0.3s ease-out forwards";
+
+    // Ocultar después de 0,3 segundos
+    setTimeout(() => {
+        check.style.display = "none";
+    }, 300);
+}
+
+  
+    /* =====================================================
+       INICIAR JUEGO
+    ===================================================== */
+
+    for (let i = 0; i < 3; i++) {
+
+        generarPregunta(i);
+
+    }
+
+
+    /* =====================================================
+       TEMPORIZADOR
+    ===================================================== */
+
+    actualizarTiempo();
+
+    const temporizador = setInterval(() => {
+
+        if (juegoActivo) {
+
+            tiempoRestante--;
+
+            actualizarTiempo();
+
+        }
+
+    }, 1000);
+
+/* =====================================================
+   MENSAJE INICIAL
+===================================================== */
+
+window.addEventListener("load", function() {
+
+    setTimeout(function() {
+
+        const mensaje =
+            document.getElementById("mensajeInicio");
+
+        if (mensaje) {
+
+            mensaje.remove();
+
+        }
+
+    }, 1500);
+
+});
+  
+</script>
+
+</body>
+</html> 
